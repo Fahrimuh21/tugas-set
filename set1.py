@@ -3,6 +3,10 @@
 #type Mhs: <nim: string, nama: string, kelas: character, nilai: list of integer> 
 #{type Mhs terdiri atas nim, nama, dan kelas mahasiswa, serta kumpulan nilai kuis yang pernah dikerjakan,
 #dengan maksimal jumlah mengerjakan adalah 10 kali. Nilai mahasiswa memiliki rentang antara 0-100} 
+#Konstruktor menambahkan elemen di awal, notasi prefix
+#type List:[] atau [e o List]
+#Konstruktor menambahkan elemen di akhir, notasi postfis
+# type List: [] atau [List o e]
 
 #DEFINISI DAN SPESIFIKASI KONSTRUKTOR 
 #MakeMhs: <string, string, character, list of integer>  → Mhs 
@@ -25,6 +29,12 @@ def Konso(e, L):
 #Realisasi
 def Konsi(L, e):
     return L+[e]
+
+#MakeMhs : string, string, string, Integer -> Mhs 
+#MakeMhs(nim, nama, kelas, nilai) adalah sebuah set  
+#Realisasi
+def MakeMhs(nim, nama, kelas, nilai):
+    return [nim, nama, kelas, nilai]
 
 
 #DEFINISI DAN SPESIFIKASI SELEKTOR
@@ -60,6 +70,52 @@ def NbElmt(L):
         return 0
     else :
         return 1+NbElmt(Tail(L))
+    
+#SumElmt: Mhs of integer -> integer
+#SumElmt (L) menghasilkan jumlahan dari setiap elemen di list Mhs L
+def SumElmt(L):
+    if IsEmpty(L):
+        return 0
+    else:
+        return FirstElmt(L)+SumElmt(Tail(L))
+
+#MaxElmt (L): Mhs of integer -> integer
+#MaxElmt (L) mengembalikan elemen maksimum dari list Mhs L
+def max2(a, b):
+    if a>b:
+        return a
+    else:
+        return b
+    
+def maxElmt(L):
+    if IsEmpty(L):
+        return 0
+    else:
+        return max2(FirstElmt(L), maxElmt(Tail(L)))
+    
+#SelectNIM : Mhs -> string
+#SelectNIM(Mhs) memberikan NIM Mhs
+#Realisasi
+def SelectNIM(Mhs):
+    return Mhs[0]
+
+#SelectNama: Mhs -> string
+#SelectNama(Mhs) memberikan Nama Mhs
+#Realisasi
+def SelectNama(Mhs):
+    return Mhs[1]
+
+#SelectKelas: Mhs -> string
+#SelectKelas(Mhs) memberikan kelas Mhs
+#Realisasi
+def SelectKelas(Mhs):
+    return Mhs[2]
+
+#SelectNilai: Mhs -> string
+#SelectNilai(Mhs) memberikan nilai Mhs
+#Realisasi
+def SelectNilai(Mhs):
+    return Mhs[3]
 
 #DEFINISI DAN SPESIFIKASI PREDIKAT
 #IsEmpty : Mhs -> boolean
@@ -76,3 +132,70 @@ def IsOneElmt(L):
         return False
     else:
         return Tail(L) == [] and Head(L) == []
+    
+#IsMember: elemen, Mhs -> boolean
+#IsMember (X,L) adalah benar jika X adalah elemen list Mhs L
+#Realisasi
+def IsMember(X, L):
+    if IsEmpty(L):
+        return False
+    else:
+        if FirstElmt(L)==X:
+            return True
+        else :
+            return IsMember(X, Tail(L)) 
+    
+#DEFINISI DAN SPESIFIKASI FUNGSI YANG MENGOPERASIKAN MHS
+#SetMhs: Mhs -> set
+#SetMhs(Mhs) mengembalikan NIM yang unik(tidak boleh sama dengan NIM yang sudah ada)
+#Realisasi
+def SetMhs(Mhs):
+    if IsEmpty(Mhs):
+        return []
+    else:
+        if IsNimMemberSetMhs(SelectNIM(FirstElmt(Mhs)), Tail(Mhs)):
+            return SetMhs(Tail(Mhs))
+        else:
+            return Konso(FirstElmt(Mhs), SetMhs(Tail(Mhs)))
+
+def IsNimMemberSetMhs(nim, SetMhs):
+    if IsEmpty(SetMhs):
+        return False
+    else:
+        if nim == SelectNIM(FirstElmt(SetMhs)):
+            return True
+        else:
+            return IsNimMemberSetMhs(nim, Tail(SetMhs))
+
+#Lulus: Mhs -> set
+#Lulus(Mhs) mengembalikan mahasiswa yang lulus(yang nilai rata rata nya lebih dari sama dengan 70)
+#Realisasi
+def Lulus(Mhs):
+    if IsEmpty(Mhs):
+        return []
+    else:
+        if RataRata(FirstElmt(Mhs)) >= 70:
+            return Konso(FirstElmt(Mhs), Lulus(Tail(Mhs)))
+        else:
+            return Lulus(Tail(Mhs)) 
+    
+def RataRata(Mhs):
+    if IsEmpty(Mhs):
+        return 0
+    else:
+        return SumElmt(SelectNilai(Mhs))/NbElmt(SelectNilai(Mhs))
+
+#TidakMengerjakanKuisKelas: string, Mhs -> set
+#TidakMengerjakanKuisKelas(kelas, Mhs) mengembalikan himpunan mahasiswa yang tidak mengerjakan kuis sama 
+#sekali di suatu kelas tertentu sesuai dengan nama kelas di-input-kan sebagai parameter.
+#Realisasi 
+def TidakMengerjakanKuisKelas(kelas, Mhs):
+    if IsEmpty(Mhs):
+        return []
+    else:
+        if kelas == SelectKelas(FirstElmt(Mhs)) and IsEmpty(SelectNilai(FirstElmt(Mhs))):
+            return Konso(FirstElmt(Mhs), TidakMengerjakanKuisKelas(kelas, Tail(Mhs)))
+        else:
+            return TidakMengerjakanKuisKelas(kelas, Tail(Mhs))
+    
+        
