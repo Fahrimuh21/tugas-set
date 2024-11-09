@@ -30,7 +30,7 @@ def Konso(e, L):
 def Konsi(L, e):
     return L+[e]
 
-#MakeMhs : string, string, string, Integer -> Mhs 
+#MakeMhs : string, string, character,list of Integer -> Mhs 
 #MakeMhs(nim, nama, kelas, nilai) adalah sebuah set  
 #Realisasi
 def MakeMhs(nim, nama, kelas, nilai):
@@ -105,7 +105,7 @@ def SelectNIM(Mhs):
 def SelectNama(Mhs):
     return Mhs[1]
 
-#SelectKelas: Mhs -> string
+#SelectKelas: Mhs -> character
 #SelectKelas(Mhs) memberikan kelas Mhs
 #Realisasi
 def SelectKelas(Mhs):
@@ -116,6 +116,21 @@ def SelectKelas(Mhs):
 #Realisasi
 def SelectNilai(Mhs):
     return Mhs[3]
+
+#RataRata: Mhs -> string
+#RataRata(Mhs) memberikan rata rata nilai Mhs
+#Realisasi
+def RataRata(Mhs):
+    if IsEmpty(Mhs):
+        return 0
+    else:
+        return SumElmt(SelectNilai(Mhs))/NbElmt(SelectNilai(Mhs))
+    
+def max2(a, b):
+    if a>b :
+        return a
+    else:
+        return b
 
 #DEFINISI DAN SPESIFIKASI PREDIKAT
 #IsEmpty : Mhs -> boolean
@@ -132,18 +147,18 @@ def IsOneElmt(L):
         return False
     else:
         return Tail(L) == [] and Head(L) == []
-    
-#IsMember: elemen, Mhs -> boolean
-#IsMember (X,L) adalah benar jika X adalah elemen list Mhs L
+     
+#IsNimMemberSetMhs: elemen, Mhs -> boolean
+#IsNimMemberSetMhs(nim, SetMhs)adalah benar jika NIM nim adalah elemen NIM X list setMhs L
 #Realisasi
-def IsMember(X, L):
-    if IsEmpty(L):
+def IsNimMemberSetMhs(nim, SetMhs):
+    if IsEmpty(SetMhs):
         return False
     else:
-        if FirstElmt(L)==X:
+        if nim == SelectNIM(FirstElmt(SetMhs)):
             return True
-        else :
-            return IsMember(X, Tail(L)) 
+        else:
+            return IsNimMemberSetMhs(nim, Tail(SetMhs))
     
 #DEFINISI DAN SPESIFIKASI FUNGSI YANG MENGOPERASIKAN MHS
 #SetMhs: Mhs -> set
@@ -158,44 +173,38 @@ def SetMhs(Mhs):
         else:
             return Konso(FirstElmt(Mhs), SetMhs(Tail(Mhs)))
 
-def IsNimMemberSetMhs(nim, SetMhs):
-    if IsEmpty(SetMhs):
-        return False
-    else:
-        if nim == SelectNIM(FirstElmt(SetMhs)):
-            return True
-        else:
-            return IsNimMemberSetMhs(nim, Tail(SetMhs))
 
 #Lulus: Mhs -> set
 #Lulus(Mhs) mengembalikan mahasiswa yang lulus(yang nilai rata rata nya lebih dari sama dengan 70)
 #Realisasi
-def Lulus(Mhs):
-    if IsEmpty(Mhs):
+def Lulus(SetMhs):
+    if IsEmpty(SetMhs):
         return []
     else:
-        if RataRata(FirstElmt(Mhs)) >= 70:
-            return Konso(FirstElmt(Mhs), Lulus(Tail(Mhs)))
+        if RataRata(FirstElmt(SetMhs)) >= 70:
+            return Konso(FirstElmt(SetMhs), Lulus(Tail(SetMhs)))
         else:
-            return Lulus(Tail(Mhs)) 
-    
-def RataRata(Mhs):
-    if IsEmpty(Mhs):
-        return 0
-    else:
-        return SumElmt(SelectNilai(Mhs))/NbElmt(SelectNilai(Mhs))
+            return Lulus(Tail(SetMhs)) 
 
 #TidakMengerjakanKuisKelas: string, Mhs -> set
 #TidakMengerjakanKuisKelas(kelas, Mhs) mengembalikan himpunan mahasiswa yang tidak mengerjakan kuis sama 
 #sekali di suatu kelas tertentu sesuai dengan nama kelas di-input-kan sebagai parameter.
 #Realisasi 
-def TidakMengerjakanKuisKelas(kelas, Mhs):
-    if IsEmpty(Mhs):
+def TidakMengerjakanKuisKelas(kelas, SetMhs):
+    if IsEmpty(SetMhs):
         return []
     else:
-        if kelas == SelectKelas(FirstElmt(Mhs)) and IsEmpty(SelectNilai(FirstElmt(Mhs))):
-            return Konso(FirstElmt(Mhs), TidakMengerjakanKuisKelas(kelas, Tail(Mhs)))
+        if kelas == SelectKelas(FirstElmt(SetMhs)) and IsEmpty(SelectNilai(FirstElmt(SetMhs))):
+            return Konso(FirstElmt(SetMhs), TidakMengerjakanKuisKelas(kelas, Tail(SetMhs)))
         else:
-            return TidakMengerjakanKuisKelas(kelas, Tail(Mhs))
-    
-        
+            return TidakMengerjakanKuisKelas(kelas, Tail(SetMhs))
+
+#NilaiTertinggi : Mhs -> 
+def NilaiTertinggi(SetMhs):
+    if IsEmpty(SelectNilai(FirstElmt(SetMhs))):
+        return NilaiTertinggi(Tail(SetMhs))
+    else:
+        if IsOneElmt(SetMhs):
+            return RataRata(SelectNilai(FirstElmt(SetMhs)))
+        else :
+            return max2(RataRata(SelectNilai(FirstElmt(SetMhs))),NilaiTertinggi(Tail(SetMhs)))
